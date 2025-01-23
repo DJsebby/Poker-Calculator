@@ -1,3 +1,6 @@
+#ifndef H_EVAL_H
+#define H_EVAL_H
+
 #include <algorithm>
 #include <string>
 
@@ -273,3 +276,5 @@ class handEvaluator {
     return 1;  // High card
   }
 };
+
+#endif

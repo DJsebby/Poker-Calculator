@@ -1,3 +1,7 @@
+#ifndef W_ODDS_H
+#define W_ODDS_H
+
+#include "deck.h"
 #include "handEvaluator.h"
 
 class winningOdds {
@@ -45,3 +49,5 @@ class winningOdds {
   }
   ~winningOdds();
 };
+
+#endif

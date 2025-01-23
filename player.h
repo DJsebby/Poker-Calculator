@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
 #include "cards.h"
 #include "deck.h"
 
@@ -17,3 +20,5 @@ class player {
   }
   std::vector<cards> getHand() { return this->hand; }
 };
+
+#endif
