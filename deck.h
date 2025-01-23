@@ -21,8 +21,8 @@ class deck {
     {
       for (size_t j = 0; j < 4; j++)  // loop over the suits
       {
-        current_deck.emplace_back(static_cast<cards::Rank>(j),
-                                  static_cast<cards::Suit>(i));
+        current_deck.emplace_back(static_cast<cards::Rank>(i),
+                                  static_cast<cards::Suit>(j));
       }
     }
 
@@ -34,7 +34,7 @@ class deck {
     std::random_device s;  // seed from hardware entropy
     std::mt19937 mt(s());
     std::shuffle(current_deck.begin(), current_deck.end(), mt);
-    std::cout << "deck has been shuffled \n";
+    // std::cout << "deck has been shuffled \n";
   }
 
   cards drawCard() {

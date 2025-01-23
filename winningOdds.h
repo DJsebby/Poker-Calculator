@@ -6,19 +6,19 @@
 
 class winningOdds {
  private:
-  int oddsOfWinning;
+  float oddsOfWinning;
 
  public:
   winningOdds() { oddsOfWinning = 0; }
-  int getOddsOfWinning() { return oddsOfWinning; }
+  float getOddsOfWinning() { return oddsOfWinning; }
   // monte carlo simulator of odds of winning
-  int SimProbabilityOfWinning(std::vector<cards> &hand,
-                              std::vector<cards> &river,
-                              std::vector<cards> &opHand, int numOfIter,
-                              deck &d) {
-    int wins = 0;
-    int losses = 0;
-    int tie = 0;
+  void SimProbabilityOfWinning(std::vector<cards> &hand,
+                               std::vector<cards> &river,
+                               std::vector<cards> &opHand, int numOfIter,
+                               deck &d) {
+    float wins = 0;
+    float losses = 0;
+    float tie = 0;
 
     handEvaluator a;
 
@@ -41,13 +41,12 @@ class winningOdds {
       river.clear();
       river = d.drawRiver();
     }
-    if (losses == 0) {
-      return wins;
+    if ((wins + tie + losses) > 0) {
+      oddsOfWinning = (wins + 0.5 * tie) / (wins + tie + losses);
+    } else {
+      oddsOfWinning = 0;  // Default case for no iterations
     }
-
-    return (wins / losses);
   }
-  ~winningOdds();
 };
 
 #endif

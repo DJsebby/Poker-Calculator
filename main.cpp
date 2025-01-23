@@ -11,10 +11,15 @@ int main() {
   std::cout << hand[0] << std::endl;
   std::cout << hand[1] << std::endl;
 
-  //    w.oddsOfWinning(hand, river, opHand, 10000, d);
-  w.SimProbabilityOfWinning(hand, river, opHand, 10, d);
+  w.SimProbabilityOfWinning(hand, river, opHand, 100000, d);
 
-  std::cout << w.getOddsOfWinning();
+  std::cout << "100,000 iterations " << std::endl;
+  std::cout << w.getOddsOfWinning() << std::endl;
+
+  //   w.SimProbabilityOfWinning(hand, river, opHand, 1000000, d);
+
+  //   std::cout << "1000000 iterations " << std::endl;
+  //   std::cout << w.getOddsOfWinning() << std::endl;
 
   return 0;
 }
