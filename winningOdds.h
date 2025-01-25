@@ -12,7 +12,7 @@ class winningOdds {
   winningOdds() { oddsOfWinning = 0; }
   float getOddsOfWinning() { return oddsOfWinning; }
   // monte carlo simulator of odds of winning
-  void SimProbabilityOfWinning(std::vector<cards> &hand,
+  void rawProbabilityOfWinning(std::vector<cards> &hand,
                                std::vector<cards> &river,
                                std::vector<cards> &opHand, int numOfIter,
                                deck &d) {
@@ -45,6 +45,39 @@ class winningOdds {
       oddsOfWinning = (wins + 0.5 * tie) / (wins + tie + losses);
     } else {
       oddsOfWinning = 0;  // Default case for no iterations
+    }
+  }
+
+  void flopProbabilityOfWinning(
+      std::vector<cards> &hand, std::vector<cards> &river,
+      std::vector<cards> &opHand, int numOfIter,
+      deck &d) {  //<--- need to re-write the logic for how the game plays, raw
+                  //logic is fine but once the flop comes we need to keep them
+                  //the same but check the prob of the other 2 and op hand
+    float wins = 0;
+    float losses = 0;
+    float tie = 0;
+
+    handEvaluator a;
+
+    for (size_t i = 0; i < numOfIter; i++) {
+      if (a.evaluateHandStrength(hand, river) ==
+          a.evaluateHandStrength(opHand, river))  // early return condition
+      {
+        tie++;
+      } else if (a.evaluateHandStrength(hand, river) >
+                 a.evaluateHandStrength(opHand, river)) {
+        wins++;
+      } else if (a.evaluateHandStrength(hand, river) <
+                 a.evaluateHandStrength(opHand, river)) {
+        losses++;
+      }
+
+      d.reshuffle(opHand, river);
+      opHand.clear();
+      opHand = d.drawHand();
+      river.clear();
+      river = d.drawRiver();
     }
   }
 };
