@@ -1,0 +1,1 @@
+g++ main.cpp -o hi cards.h deck.h handEvaluator.h player.h winningOdds.h

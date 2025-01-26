@@ -69,6 +69,15 @@ class deck {
     return river;
   }
 
+  std::vector<cards> drawFlop() {
+    std::vector<cards> flop;
+    cards burn = drawCard();
+
+    for (size_t i = 0; i < 3; i++) {
+      flop.push_back(drawCard());
+    }
+    return flop;
+  }
   void reshuffle(std::vector<cards> hand, std::vector<cards> river) {
     for (size_t i = 0; i < hand.size(); i++) {
       current_deck.push_back(hand[i]);
