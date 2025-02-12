@@ -6,18 +6,18 @@
 
 class winningOdds {
  private:
-  float oddsOfWinning;
+  double oddsOfWinning;
 
  public:
   winningOdds() { oddsOfWinning = 0; }
-  float getOddsOfWinning() { return oddsOfWinning; }
+  double getOddsOfWinning() { return oddsOfWinning; }
   // monte carlo simulator of odds of winning
   void rawProbabilityOfWinning(std::vector<cards> &hand,
                                std::vector<cards> &opHand, int numOfIter,
                                deck &d) {
-    float wins = 0;
-    float losses = 0;
-    float tie = 0;
+    double wins = 0;
+    double losses = 0;
+    double tie = 0;
 
     handEvaluator a;
 
@@ -55,9 +55,9 @@ class winningOdds {
       deck &d) {  //<--- need to re-write the logic for how the game plays, raw
                   // logic is fine but once the flop comes we need to keep them
                   // the same but check the prob of the other 2 and op hand
-    float wins = 0;
-    float losses = 0;
-    float tie = 0;
+    double wins = 0;
+    double losses = 0;
+    double tie = 0;
 
     handEvaluator a;
 
