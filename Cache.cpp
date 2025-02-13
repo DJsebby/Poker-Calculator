@@ -1,7 +1,7 @@
 // code to help make the speed of doing another monte carlo simulation more
 // efficient.
-#ifndef FLOPCACHE_H
-#define FLOPCACHE_H
+#ifndef CACHE_H
+#define CACHE_H
 
 #include <algorithm>
 #include <fstream>
@@ -14,7 +14,7 @@
 
 using namespace std;
 
-class FlopCache {
+class Cache {
  private:
   unordered_map<string, float> cache;
   unordered_map<string, float> weights;
@@ -120,7 +120,7 @@ class FlopCache {
     outFile.close();
   }
 
-  void outputCache() {  // outputs the cache and the values inside for testinf
+  void outputCache() {  // outputs the cache and the values inside for testing
                         // purposes
     for (auto& c : cache) {
       cout << "the key is: " << c.first << endl;

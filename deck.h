@@ -61,7 +61,7 @@ class deck {
     }
     return hand;
   }
-  std::vector<cards> drawRiver() {
+  std::vector<cards> drawFullRiver() {
     std::vector<cards> river;
     for (size_t i = 0; i < 5; i++) {
       river.push_back(drawCard());
@@ -71,19 +71,26 @@ class deck {
 
   std::vector<cards> drawFlop() {
     std::vector<cards> flop;
-    cards burn = drawCard();
+    drawCard();  // to burn the car
 
     for (size_t i = 0; i < 3; i++) {
       flop.push_back(drawCard());
     }
     return flop;
   }
-  void reshuffle(std::vector<cards> hand, std::vector<cards> river) {
-    for (size_t i = 0; i < hand.size(); i++) {
-      current_deck.push_back(hand[i]);
-    }
-    for (size_t i = 0; i < river.size(); i++) {
-      current_deck.push_back(river[i]);
+  cards drawTurn() {
+    drawCard();  // to burn the car
+    return drawCard();
+  }
+
+  cards drawRiver() {
+    drawCard();  // to burn the car
+    return drawCard();
+  }
+
+  void reshuffle(std::vector<cards> cardsR) {
+        for (size_t i = 0; i < cardsR.size(); i++) {
+      current_deck.push_back(cardsR[i]);
     }
 
     shuffleDeck();

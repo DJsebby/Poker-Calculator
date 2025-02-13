@@ -10,37 +10,58 @@ class winningOdds {
 
  public:
   winningOdds() { oddsOfWinning = 0; }
+
   double getOddsOfWinning() { return oddsOfWinning; }
+
   // monte carlo simulator of odds of winning
-  void rawProbabilityOfWinning(std::vector<cards> &hand,
-                               std::vector<cards> &opHand, int numOfIter,
-                               deck &d) {
+  void rawProbabilityOfWinning(
+      std::vector<cards> &hand, int numOp, int numOfIter,
+      deck &d) {  // finds the probability during the first stage of the game
+                  // (raw strength)
     double wins = 0;
     double losses = 0;
     double tie = 0;
 
     handEvaluator a;
 
-    std::vector<cards> river = d.drawRiver();
+    std::vector<std::vector<cards>> opponents;
+    // adding in the opponents
+
+    std::vector<cards> river;
+    int maxHandStrength = 0;
+    int oppenentHandStrength;
+    int heroHandStrength = 0;
 
     for (size_t i = 0; i < numOfIter; i++) {
-      if (a.evaluateHandStrength(hand, river) ==
-          a.evaluateHandStrength(opHand, river))  // early return condition
-      {
+      // dealing cards to opponent
+      for (int i = 0; i < numOp; i++) {
+        opponents.push_back(d.drawHand());
+      }
+      // dealing river
+      river = d.drawFullRiver();
+
+      // find the max opponent strength
+      for (int i = 0; i < numOp; i++) {
+        oppenentHandStrength = a.evaluateHandStrength(opponents[i], river);
+        maxHandStrength = std::max(maxHandStrength, oppenentHandStrength);
+      }
+      // find hero's hand strength
+      heroHandStrength = a.evaluateHandStrength(hand, river);
+      // comparing it to the heros hand strength
+
+      if (heroHandStrength == oppenentHandStrength) {
         tie++;
-      } else if (a.evaluateHandStrength(hand, river) >
-                 a.evaluateHandStrength(opHand, river)) {
+      } else if (heroHandStrength > oppenentHandStrength) {
         wins++;
-      } else if (a.evaluateHandStrength(hand, river) <
-                 a.evaluateHandStrength(opHand, river)) {
+      } else if (heroHandStrength < oppenentHandStrength) {
         losses++;
       }
 
-      d.reshuffle(opHand, river);
+      d.reshuffle(opponents[i], river);
       opHand.clear();
       opHand = d.drawHand();
       river.clear();
-      river = d.drawRiver();
+      river = d.drawFullRiver();
     }
     if ((wins + tie + losses) > 0) {
       oddsOfWinning = (wins + 0.5 * tie) / (wins + tie + losses);
