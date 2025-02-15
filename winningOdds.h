@@ -25,6 +25,7 @@ class winningOdds {
     handEvaluator a;
 
     std::vector<std::vector<cards>> opponents;
+    opponents.resize(numOp);
     // adding in the opponents
 
     std::vector<cards> river;
@@ -34,15 +35,17 @@ class winningOdds {
 
     for (size_t i = 0; i < numOfIter; i++) {
       // dealing cards to opponent
-      for (int i = 0; i < numOp; i++) {
-        opponents.push_back(d.drawHand());
+      for (int k = 0; k < numOp; k++) {
+        for (int j = 0; j < 2; j++) {
+          opponents[k].push_back(d.drawCard());
+        }
       }
       // dealing river
       river = d.drawFullRiver();
 
       // find the max opponent strength
-      for (int i = 0; i < numOp; i++) {
-        oppenentHandStrength = a.evaluateHandStrength(opponents[i], river);
+      for (int l = 0; l < numOp; l++) {
+        oppenentHandStrength = a.evaluateHandStrength(opponents[l], river);
         maxHandStrength = std::max(maxHandStrength, oppenentHandStrength);
       }
       // find hero's hand strength
@@ -57,12 +60,15 @@ class winningOdds {
         losses++;
       }
 
-      d.reshuffle(opponents[i], river);
-      opHand.clear();
-      opHand = d.drawHand();
+      // reset deck for next iteration
+      for (int m = 0; m < numOp; m++) {
+        d.reshuffle(opponents[m]);
+        opponents[m].clear();
+      }
+      d.reshuffle(river);
       river.clear();
-      river = d.drawFullRiver();
     }
+    // calculate odds of winning
     if ((wins + tie + losses) > 0) {
       oddsOfWinning = (wins + 0.5 * tie) / (wins + tie + losses);
     } else {
@@ -70,50 +76,58 @@ class winningOdds {
     }
   }
 
-  void flopProbabilityOfWinning(
-      std::vector<cards> &hand, std::vector<cards> &flop,
-      std::vector<cards> &opHand, int numOfIter,
-      deck &d) {  //<--- need to re-write the logic for how the game plays, raw
-                  // logic is fine but once the flop comes we need to keep them
-                  // the same but check the prob of the other 2 and op hand
+  void boardProbabilityOfWinning(std::vector<cards> &hand,
+                                 std::vector<cards> &board, int numOp,
+                                 int numOfIter, deck &d) {
     double wins = 0;
     double losses = 0;
     double tie = 0;
 
     handEvaluator a;
 
-    std::vector<cards> river = flop;
-    std::vector<cards> twoExtra;
+    std::vector<cards> currentCards = board;
+    std::vector<std::vector<cards>> opponents;
+    opponents.resize(numOp);
 
-    // river is equal to the flop + 2 additional cards
-    for (int i = 0; i < 2; i++) {
-      river.push_back(d.drawCard());
-    }
+    int maxHandStrength = 0;
+    int oppenentHandStrength;
+    int heroHandStrength = 0;
 
     for (size_t i = 0; i < numOfIter; i++) {
-      if (a.evaluateHandStrength(hand, river) ==
-          a.evaluateHandStrength(opHand, river))  // early return condition
-      {
+      // to complete the board
+      for (int p = currentCards.size(); p < 5; p++) {
+        currentCards.push_back(d.drawCard());
+      }
+      // dealing cards to opponent
+      for (int k = 0; k < numOp; k++) {
+        for (int j = 0; j < 2; j++) {
+          opponents[k].push_back(d.drawCard());
+        }
+      }
+      // find the max opponent strength
+      for (int l = 0; l < numOp; l++) {
+        oppenentHandStrength = a.evaluateHandStrength(opponents[l], board);
+        maxHandStrength = std::max(maxHandStrength, oppenentHandStrength);
+      }
+      // find hero's hand strength
+      heroHandStrength = a.evaluateHandStrength(hand, board);
+
+      if (heroHandStrength == maxHandStrength) {
         tie++;
-      } else if (a.evaluateHandStrength(hand, river) >
-                 a.evaluateHandStrength(opHand, river)) {
+      } else if (heroHandStrength > maxHandStrength) {
         wins++;
-      } else if (a.evaluateHandStrength(hand, river) <
-                 a.evaluateHandStrength(opHand, river)) {
+      } else if (heroHandStrength < maxHandStrength) {
         losses++;
       }
 
-      twoExtra.push_back(river.back());
-      river.pop_back();
-      twoExtra.push_back(river.back());
-      river.pop_back();
-      d.reshuffle(opHand, twoExtra);
-      opHand.clear();
-      opHand = d.drawHand();
-
-      for (int i = 0; i < 2; i++) {
-        river.push_back(d.drawCard());
+      // reset for the next interation
+      for (int m = 0; m < numOp; m++) {
+        d.reshuffle(opponents[m]);
+        opponents[m].clear();
       }
+
+      d.reshuffle(board);
+      board.clear();
     }
 
     if ((wins + tie + losses) > 0) {

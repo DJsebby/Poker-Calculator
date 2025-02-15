@@ -1,23 +1,20 @@
 #include "winningOdds.h"
 
-void runGameSimulation() {
+void runGameSimulation(int numOp) {
   deck d;
   winningOdds w;
   std::vector<cards> board;
 
+  int numberOP = numOp;
+
   // first round
   std::vector<cards> hand = d.drawHand();
-  std::vector<cards> opHand = d.drawHand();
 
   std::cout << "your hand: \n";
   std::cout << hand[0] << std::endl;
   std::cout << hand[1] << std::endl;
 
-  std::cout << "opponents hand: \n";
-  std::cout << opHand[0] << std::endl;
-  std::cout << opHand[1] << std::endl;
-
-  w.rawProbabilityOfWinning(hand, opHand, 100000, d);
+  w.rawProbabilityOfWinning(hand, numberOP, 100000, d);
 
   std::cout << "100,000 iterations " << std::endl;
   std::cout << w.getOddsOfWinning() << std::endl;
@@ -30,10 +27,10 @@ void runGameSimulation() {
     std::cout << card;
   }
 
-  std::cout << "1,000 iterations " << std::endl;
+  std::cout << "100,000 iterations " << std::endl;
   std::cout << "the probabilty of winning based on the flop is: ";
 
-  w.flopProbabilityOfWinning(hand, board, opHand, 1000, d);
+  w.boardProbabilityOfWinning(hand, board, numberOP, 100000, d);
   std::cout << w.getOddsOfWinning() << std::endl;
 
   // turn
@@ -44,17 +41,28 @@ void runGameSimulation() {
     std::cout << card;
   }
 
+  std::cout << "100,000 iterations " << std::endl;
+  std::cout << "the probabilty of winning based on the flop is: ";
+
+  w.boardProbabilityOfWinning(hand, board, numberOP, 100000, d);
+  std::cout << w.getOddsOfWinning() << std::endl;
+
   // river (end of the game)
   board.push_back(d.drawRiver());
 
-  std::cout << "AFter the river the board is: \n\n";
+  std::cout << "After the river the board is: \n\n";
   for (auto card : board) {
     std::cout << card;
   }
+
+  std::cout << "100,000 iterations " << std::endl;
   std::cout << "The final probability of winning is: \n";
+
+  w.boardProbabilityOfWinning(hand, board, numberOP, 100000, d);
+  std::cout << w.getOddsOfWinning() << std::endl;
 }
 
 int main() {
-  runGameSimulation();
+  runGameSimulation(1);
   return 0;
 }
