@@ -89,12 +89,14 @@ class deck {
   }
 
   void reshuffle(std::vector<cards> cardsR) {
-        for (size_t i = 0; i < cardsR.size(); i++) {
+    for (size_t i = 0; i < cardsR.size(); i++) {
       current_deck.push_back(cardsR[i]);
     }
 
     shuffleDeck();
   }
+
+  int getDeckSize() { return current_deck.size(); }
 };
 
 #endif

@@ -52,11 +52,11 @@ class winningOdds {
       heroHandStrength = a.evaluateHandStrength(hand, river);
       // comparing it to the heros hand strength
 
-      if (heroHandStrength == oppenentHandStrength) {
+      if (heroHandStrength == maxHandStrength) {
         tie++;
-      } else if (heroHandStrength > oppenentHandStrength) {
+      } else if (heroHandStrength > maxHandStrength) {
         wins++;
-      } else if (heroHandStrength < oppenentHandStrength) {
+      } else if (heroHandStrength < maxHandStrength) {
         losses++;
       }
 
@@ -67,6 +67,7 @@ class winningOdds {
       }
       d.reshuffle(river);
       river.clear();
+      maxHandStrength = 0;
     }
     // calculate odds of winning
     if ((wins + tie + losses) > 0) {
@@ -85,7 +86,7 @@ class winningOdds {
 
     handEvaluator a;
 
-    std::vector<cards> currentCards = board;
+    std::vector<cards> currentCards;
     std::vector<std::vector<cards>> opponents;
     opponents.resize(numOp);
 
@@ -94,6 +95,8 @@ class winningOdds {
     int heroHandStrength = 0;
 
     for (size_t i = 0; i < numOfIter; i++) {
+      // creat board with exisiting cards
+      currentCards = board;
       // to complete the board
       for (int p = currentCards.size(); p < 5; p++) {
         currentCards.push_back(d.drawCard());
@@ -106,11 +109,12 @@ class winningOdds {
       }
       // find the max opponent strength
       for (int l = 0; l < numOp; l++) {
-        oppenentHandStrength = a.evaluateHandStrength(opponents[l], board);
+        oppenentHandStrength =
+            a.evaluateHandStrength(opponents[l], currentCards);
         maxHandStrength = std::max(maxHandStrength, oppenentHandStrength);
       }
       // find hero's hand strength
-      heroHandStrength = a.evaluateHandStrength(hand, board);
+      heroHandStrength = a.evaluateHandStrength(hand, currentCards);
 
       if (heroHandStrength == maxHandStrength) {
         tie++;
@@ -125,10 +129,14 @@ class winningOdds {
         d.reshuffle(opponents[m]);
         opponents[m].clear();
       }
+      // to reshuffle just the new added cards
 
-      d.reshuffle(board);
-      board.clear();
-    }
+      d.reshuffle(std::vector<cards>(currentCards.begin() + board.size(),
+                                     currentCards.end()));
+
+      currentCards.clear();
+      maxHandStrength = 0;
+        }
 
     if ((wins + tie + losses) > 0) {
       oddsOfWinning = (wins + 0.5 * tie) / (wins + tie + losses);
