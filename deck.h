@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <random>
+#include <string>
 #include <vector>
 
 #include "cards.h"
@@ -97,6 +98,42 @@ class deck {
   }
 
   int getDeckSize() { return current_deck.size(); }
+
+  std::vector<cards> drawFourHAceC() {  // just for testing purposes
+    std::vector<cards> hand;
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Four &&
+          current_deck[i].getSuit() == cards::Suit::Hearts) {
+        hand.push_back(current_deck[i]);
+      }
+    }
+
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Ace &&
+          current_deck[i].getSuit() == cards::Suit::Clubs) {
+        hand.push_back(current_deck[i]);
+      }
+    }
+    return hand;
+  }
+
+  std::vector<cards> drawTenCJackD() {  // just for testing purposes
+    std::vector<cards> hand;
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Ten &&
+          current_deck[i].getSuit() == cards::Suit::Clubs) {
+        hand.push_back(current_deck[i]);
+      }
+    }
+
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Jack &&
+          current_deck[i].getSuit() == cards::Suit::Diamonds) {
+        hand.push_back(current_deck[i]);
+      }
+    }
+    return hand;
+  }
 };
 
 #endif

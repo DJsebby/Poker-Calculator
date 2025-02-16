@@ -1,3 +1,4 @@
+#include "test.cpp"
 #include "winningOdds.h"
 
 void runGameSimulation(int numOp) {
@@ -63,6 +64,7 @@ void runGameSimulation(int numOp) {
 }
 
 int main() {
-  runGameSimulation(1);
+  // runGameSimulation(1);
+  oneOpponentSetCards();
   return 0;
 }
