@@ -3,11 +3,12 @@
 
 #include <algorithm>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "cards.h"
 #include "player.h"
-#include "unordered_map"
-#include "unordered_set"
 
 class handEvaluator {
  private:
@@ -274,6 +275,297 @@ class handEvaluator {
     if (hasTwoPair(hand, river)) return 3;
     if (hasPair(hand, river)) return 2;
     return 1;  // High card
+  }
+
+  bool cardAcending(cards a, cards b) {  // comparitor for the sorting function
+    int aNum = a.getRankAsInt();
+    int bNum = b.getRankAsInt();
+    return aNum < bNum;  // returns the cards in acending order
+  }
+
+  cards findHighestStraightFlush(const std::vector<cards>& hand1,
+                                 const std::vector<cards>& hand2,
+                                 std::vector<cards>& river) {
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+    // adding cards in the combined vector
+    for (int i = 0; i < 2; i++) {
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+
+    // sorted the combinded vectors to find the highest straight flush
+
+    std::sort(combined1.begin(), combined1.end(), cardAcending);
+    std::sort(combined2.begin(), combined2.end(), cardAcending);
+
+    // check first card in hand and then
+    std::vector<cards> highCards(
+        2, cards(cards::Rank::Two, cards::Suit::Hearts));  // junk value
+
+    auto findHighestStraightFlush =
+        [](const std::vector<cards>& combined) -> cards {
+      int count = 1;
+      cards highestCard = cards(cards::Rank::Two, cards::Suit::Hearts);
+      cards lastValidCard = combined[0];
+
+      for (size_t i = 1; i < combined.size(); i++) {
+        if (combined[i].getRankAsInt() == combined[i - 1].getRankAsInt() + 1 &&
+            combined[i].getSuit() == combined[i - 1].getSuit()) {
+          count++;
+          lastValidCard =
+              combined[i];  // Track the highest card in the sequence
+
+          if (count >= 5) {
+            highestCard = lastValidCard;
+          }
+        } else {
+          count = 1;  // Reset count when sequence breaks
+        }
+      }
+      return highestCard;
+    };
+
+    // Find the highest straight flush for each player
+    highCards[0] = findHighestStraightFlush(combined1);
+    highCards[1] = findHighestStraightFlush(combined2);
+
+    // Compare the highest straight flushes
+    return highCards[0].getRankAsInt() > highCards[1].getRankAsInt()
+               ? highCards[0]
+               : highCards[1];
+  }
+
+  int checkKicker(const std::vector<cards>& hand1,
+                  const std::vector<cards>& hand2) {
+    // combine the hands and then find the largest card
+    std::unordered_set<int> rank1;
+    std::unordered_set<int> rank2;
+
+    std::vector<cards> combined;
+
+    for (size_t i = 0; i < 2; i++) {
+      combined.push_back(hand1[i]);
+      rank1.insert(hand1[i].getRankAsInt());
+      combined.push_back(hand2[i]);
+      rank2.insert(hand2[i].getRankAsInt());
+    }
+
+    std::sort(combined.begin(), combined.end(), cardAcending);
+
+    if (rank1.count(combined.back().getRankAsInt()) == 1 &&
+        (rank2.count(combined.back().getRankAsInt()) == 1)) {
+      return -1;
+    }
+    if (rank1.count(combined.back().getRankAsInt()) == 1 &&
+        (rank2.count(combined.back().getRankAsInt()) != 1)) {
+      return 1;
+    }
+    if (rank1.count(combined.back().getRankAsInt()) != 1 &&
+        (rank2.count(combined.back().getRankAsInt()) == 1)) {
+      return 0;
+    }
+  }
+
+  int fourOfaKindTie(
+      const std::vector<cards>& hand1, const std::vector<cards>& hand2,
+      std::vector<cards>& river) {  // find the highest 4 of a kind and if not
+                                    // compare kicker find the biggest 4
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+    // adding cards in the combined vector
+    for (int i = 0; i < 2; i++) {
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+    // add all the cards that equal 4 and then return the cards that do
+
+    std::vector<int> cardCount1(combined1.size(), 0);
+    std::vector<int> cardCount2(combined2.size(), 0);
+
+    cards rank1(cards::Rank::Two, cards::Suit::Clubs);
+    cards rank2(cards::Rank::Two, cards::Suit::Clubs);
+
+    for (size_t i = 0; i < combined1.size(); i++) {
+      cardCount1[combined1[i].getRankAsInt()]++;
+      cardCount2[combined2[i].getRankAsInt()]++;
+      if (cardCount1[combined1[i].getRankAsInt()] == 4) {
+        rank1 = combined1[i];
+      }
+      if (cardCount2[combined2[i].getRankAsInt()] == 4) {
+        rank2 = combined2[i];
+      }
+    }
+
+    //  find the highest rank
+    if (rank1.getRankAsInt() > rank2.getRankAsInt()) {
+      return 1;
+    } else if (rank1.getRankAsInt() < rank2.getRankAsInt()) {
+      return 0;
+    }
+    // this means that the 4 of a kind is on the bard so we need to checker
+    // kicker
+
+    return checkKicker(hand1, hand2);
+  }
+
+  int fullHouseTie(const std::vector<cards>& hand1,
+                   const std::vector<cards>& hand2, std::vector<cards>& river) {
+    // first we need to find which cards give either player a full house
+    std::unordered_map<std::string, int> rankCount1;
+    std::unordered_map<std::string, int> rankCount2;
+
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+
+    for (size_t i = 0; i < 2; i++) {
+      rankCount1[combined1[i].rankToString()]++;
+      rankCount2[combined2[i].rankToString()]++;
+    }
+
+    // get the three of a kind from the count
+    std::string hero3Count = "zero";
+    std::string OP3Count = "zero";
+
+    for (auto& card : rankCount1) {
+      if (card.second >= 3 && std::stoi(card.first) > std::stoi(hero3Count)) {
+        hero3Count = card.first;
+      }
+    }
+    for (auto& card : rankCount2) {
+      if (card.second >= 3 && std::stoi(card.first) > std::stoi(OP3Count)) {
+        OP3Count = card.first;
+      }
+    }
+
+    // the higher 3 pair wins else we need to evaluate the two pair
+
+    if (std::stoi(hero3Count) > std::stoi(OP3Count)) {
+      return 1;
+    } else if (std::stoi(hero3Count) < std::stoi(OP3Count)) {
+      return 0;
+    }
+
+    // same proocess to identify a 2 pair
+    std::string hero2Count = "zero";
+    std::string OP2Count = "zero";
+
+    for (auto& card : rankCount1) {
+      if (card.second == 2 && std::stoi(card.first) > std::stoi(hero2Count)) {
+        hero2Count = card.first;
+      }
+    }
+    for (auto& card : rankCount2) {
+      if (card.second >= 3 && std::stoi(card.first) > std::stoi(OP2Count)) {
+        OP2Count = card.first;
+      }
+    }
+
+    // this higher pair wins else its a tie
+
+    if (std::stoi(hero2Count) > std::stoi(OP2Count)) {
+      return 1;
+    } else if (std::stoi(hero2Count) < std::stoi(OP2Count)) {
+      return 0;
+    } else
+      return -1;
+  }
+
+  int flushTie(const std::vector<cards>& hand1, const std::vector<cards>& hand2,
+               std::vector<cards>& river) {
+    // compare the highest flush card and move down the list of flush cards
+    // until all flush cards are evaluted. if there are equal for both player
+    // this means that the flush is on the board
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+
+    std::unordered_map<std::string, int> suitCount1;
+    std::unordered_map<std::string, int> suitCount2;
+
+    for (size_t i = 0; i < 2; i++) {
+      suitCount1[combined1[i].suitToString()]++;
+      suitCount2[combined2[i].suitToString()]++;
+    }
+    // find the suit that gives the flush for both players
+    std::string suit1;
+    for (auto& suit : suitCount1) {
+      if (suit.second >= 5) {
+        suit1 = suit.first;
+      }
+    }
+
+    std::string suit2;
+    for (auto& suit : suitCount2) {
+      if (suit.second >= 5) {
+        suit2 = suit.first;
+      }
+    }
+
+    // now find the highest suits by sorting both of the combined vectors and
+    // then checking them to see if they are of the saem suit and if they are
+    // equal.
+
+    std::sort(combined1.begin(), combined1.end(),
+              [](const cards& a, const cards& b) -> bool {
+                return a.getRankAsInt() > b.getRankAsInt();
+              });
+    std::sort(combined1.begin(), combined1.end(),
+              [](const cards& a, const cards& b) -> bool {
+                return a.getRankAsInt() > b.getRankAsInt();
+              });
+
+    for (size_t i = 0; i < combined1.size(); i++) {
+      if (combined1[i].suitToString() == suit1 &&
+          combined2[i].suitToString() == suit2) {
+        if (combined1[i].getRankAsInt() > combined2[i].getRankAsInt()) {
+          return 1;
+        }
+        if (combined1[i].getRankAsInt() < combined2[i].getRankAsInt()) {
+          return 0;
+        }
+      }
+    }
+
+    return -1;
+  }
+
+  int tieBreaker(
+      const std::vector<cards>& hand1, const std::vector<cards>& hand2,
+      std::vector<cards>& river,
+      int score) {  // return 1 if hero wins 0 if hero loses -1 if tie
+
+    // juding by the score, we will know how to compare both hands
+
+    switch (score) {
+      case 10:
+        return -1;
+        break;
+
+      case 9:  // straight flush
+        cards highestCard = findHighestStraightFlush(hand1, hand2, river);
+
+        // checking if the highest card is from player 1's hands
+        for (int i = 0; i < 2; i++) {
+          if (highestCard.getRank() == hand1[i].getRank() &&
+              highestCard.getSuit() == hand1[i].getSuit()) {
+            return 1;
+          }
+        }
+        return 0;
+        break;
+
+      case 8:  // four of a kind find kicker
+        return fourOfaKindTie(hand1, hand2, river);
+        break;
+      case 7:  // full house tie
+        return fullHouseTie(hand1, hand2, river);
+        break;
+      case 6:  // flush tie
+        return;
+        break;
+      default:
+        break;
+    }
   }
 };
 

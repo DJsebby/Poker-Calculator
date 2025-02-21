@@ -81,7 +81,7 @@ class cards {
 
   int getRankAsInt() const { return static_cast<int>(rank); }
 
-  private:
+ private:
   Rank rank;
   Suit suit;
 };

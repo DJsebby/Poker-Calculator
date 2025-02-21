@@ -1,6 +1,16 @@
+// code to help make the speed of doing another monte carlo simulation more
+// efficient.
+#ifndef CACHE_H
+#define CACHE_H
 
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#include "Cache.h"
+#include "cards.h"
 
 using namespace std;
 
@@ -119,3 +129,5 @@ class Cache {
     }
   }
 };
+
+#endif

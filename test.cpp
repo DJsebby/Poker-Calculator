@@ -1,10 +1,5 @@
-#ifndef TEST_GUARD
-#define TEST_GUARD
 
-#include <iostream>
-#include <vector>
-
-#include "winningOdds.h"
+#include "test.h"
 
 double testGetProbability(
     std::vector<cards> &hand, std::vector<cards> &OPhand,
@@ -82,37 +77,44 @@ void oneOpponentSetCards() {
   std::cout << OPhand[0] << std::endl;
   std::cout << OPhand[1] << std::endl;
 
-  std::cout << "100,000 iterations " << std::endl;
+  std::cout << "1 ---  " << std::endl;
   std::cout << "the raw probability is"
             << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
             << std::endl;
 
   // flop
-  board = d.drawFlop();
+  board = d.drawTestFlop();
 
-  std::cout << "After the flop the board is: \n\n";
+  std::cout << "2 --- After the flop the board is: \n\n";
   for (auto card : board) {
     std::cout << card;
   }
 
-  std::cout << "100,000 iterations " << std::endl;
   std::cout << "The probability of winning based on these cards is: \n";
 
   std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
             << std::endl;
 
-  board.push_back(d.drawRiver());
+  board.push_back(d.drawTestTurn());
 
-  std::cout << "After the river the board is: \n\n";
+  std::cout << "3 --- After the turn the board is: \n\n";
   for (auto card : board) {
     std::cout << card;
   }
 
-  std::cout << "100,000 iterations " << std::endl;
   std::cout << "The probability of winning based on these cards is: \n";
+
+  std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
+            << std::endl;
+  board.push_back(d.drawTestRiver());
+
+  std::cout << "4 --- After the river the board is: \n\n";
+  for (auto card : board) {
+    std::cout << card;
+  }
+
+  std::cout << "The probability of winning the gane is: \n";
 
   std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
             << std::endl;
 }
-
-#endif

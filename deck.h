@@ -18,12 +18,15 @@ class deck {
   deck() {
     // populate the deck in order
 
-    for (size_t i = 2; i < 14; i++)  // loop over the ranks
+    for (size_t i = 0; i < 13;
+         i++)  // loop over the ranks (0 to 12 corresponding to Two to Ace)
     {
       for (size_t j = 0; j < 4; j++)  // loop over the suits
       {
-        current_deck.emplace_back(static_cast<cards::Rank>(i),
-                                  static_cast<cards::Suit>(j));
+        current_deck.emplace_back(
+            static_cast<cards::Rank>(i +
+                                     2),  // +2 to align with the correct rank
+            static_cast<cards::Suit>(j));
       }
     }
 
@@ -99,12 +102,15 @@ class deck {
 
   int getDeckSize() { return current_deck.size(); }
 
+  // testing functions----------------------------------------------
+
   std::vector<cards> drawFourHAceC() {  // just for testing purposes
     std::vector<cards> hand;
     for (int i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Four &&
           current_deck[i].getSuit() == cards::Suit::Hearts) {
         hand.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
       }
     }
 
@@ -112,6 +118,7 @@ class deck {
       if (current_deck[i].getRank() == cards::Rank::Ace &&
           current_deck[i].getSuit() == cards::Suit::Clubs) {
         hand.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
       }
     }
     return hand;
@@ -123,6 +130,7 @@ class deck {
       if (current_deck[i].getRank() == cards::Rank::Ten &&
           current_deck[i].getSuit() == cards::Suit::Clubs) {
         hand.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
       }
     }
 
@@ -130,9 +138,69 @@ class deck {
       if (current_deck[i].getRank() == cards::Rank::Jack &&
           current_deck[i].getSuit() == cards::Suit::Diamonds) {
         hand.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
       }
     }
     return hand;
+  }
+
+  std::vector<cards> drawTestFlop() {
+    std::vector<cards> flop;
+    // burn card
+    current_deck.pop_back();
+    // draw 7 of clubs, 10 of heart and 2 of spades
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Seven &&
+          current_deck[i].getSuit() == cards::Suit::Clubs) {
+        flop.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Ten &&
+          current_deck[i].getSuit() == cards::Suit::Hearts) {
+        flop.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Two &&
+          current_deck[i].getSuit() == cards::Suit::Spades) {
+        flop.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+
+    return flop;
+  }
+
+  cards drawTestTurn() {
+    std::vector<cards> Turn;
+    // burn card
+    current_deck.pop_back();
+    // draw Ace of diamonds
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Ace &&
+          current_deck[i].getSuit() == cards::Suit::Diamonds) {
+        Turn.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+    return Turn[0];
+  }
+  cards drawTestRiver() {
+    std::vector<cards> river;
+    // burn card
+    current_deck.pop_back();
+    // draw 2 of diamonds
+    for (int i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Two &&
+          current_deck[i].getSuit() == cards::Suit::Diamonds) {
+        river.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+    return river[0];
   }
 };
 
