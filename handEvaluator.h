@@ -644,10 +644,57 @@ class handEvaluator {
     std::vector<cards> combined1 = river;
     std::vector<cards> combined2 = river;
 
+    std::unordered_map<int, int> rankCount1;
+    std::unordered_map<int, int> rankCount2;
+
     for (size_t i = 0; i < 2; i++) {
       combined1.push_back(hand1[i]);
       combined2.push_back(hand2[i]);
     }
+
+    for (size_t i = 0; i < combined1.size(); i++) {
+      rankCount1[combined1[i].getRankAsInt()]++;
+      rankCount2[combined2[i].getRankAsInt()]++;
+    }
+
+    // search through to find the 2 pairs
+    std::vector<int> pair1(2, 0);
+    std::vector<int> pair2(2, 0);
+
+    for (auto& rank : rankCount1) {
+      int i = 0;
+      if (rank.second == 2 && rank.second != pair1[i]) {
+        pair1[i] = rank.first;
+        i++;
+      }
+    }
+
+    for (auto& rank : rankCount2) {
+      int i = 0;
+      if (rank.second == 2 && rank.second != pair2[i]) {
+        pair2[i] = rank.first;
+        i++;
+      }
+    }
+
+    std::sort(pair1.begin(), pair1.end());
+    std::sort(pair2.begin(), pair2.end());
+
+    // now we have the 2 distict ranks in our vector we compare to find the
+    // winner
+    if (pair1[1] > pair2[1]) {
+      return 1;
+    } else if (pair1[1] < pair2[1]) {
+      return 0;
+    }
+    if (pair1[0] > pair2[0]) {
+      return 1;
+    } else if (pair1[0] < pair2[0]) {
+      return 0;
+    }
+
+    // if both pairs are equal we need to check the kickers
+    return checkKicker(hand1, hand2);
   }
 
   int tieBreaker(
@@ -691,7 +738,8 @@ class handEvaluator {
         return threeOfaKindTie(hand1, hand2, river);
         break;
       case 3:  // 2 pair tie
-        return break;
+        return twoPairTie(hand1, hand2, river);
+        break;
       default:
         break;
     }
