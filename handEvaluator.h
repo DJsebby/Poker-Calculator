@@ -277,6 +277,8 @@ class handEvaluator {
     return 1;  // High card
   }
 
+  // ---- The following will the be the tie break logic ----
+
   bool cardAcending(cards a, cards b) {  // comparitor for the sorting function
     int aNum = a.getRankAsInt();
     int bNum = b.getRankAsInt();
@@ -419,8 +421,13 @@ class handEvaluator {
     std::vector<cards> combined2 = river;
 
     for (size_t i = 0; i < 2; i++) {
-      rankCount1[combined1[i].rankToString()]++;
-      rankCount2[combined2[i].rankToString()]++;
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+
+    for (size_t i = 0; i < combined1.size(); i++) {
+      rankCount1[combined1[i].suitToString()]++;
+      rankCount2[combined2[i].suitToString()]++;
     }
 
     // get the three of a kind from the count
@@ -483,9 +490,15 @@ class handEvaluator {
     std::unordered_map<std::string, int> suitCount2;
 
     for (size_t i = 0; i < 2; i++) {
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+
+    for (size_t i = 0; i < combined1.size(); i++) {
       suitCount1[combined1[i].suitToString()]++;
       suitCount2[combined2[i].suitToString()]++;
     }
+
     // find the suit that gives the flush for both players
     std::string suit1;
     for (auto& suit : suitCount1) {
@@ -529,6 +542,114 @@ class handEvaluator {
     return -1;
   }
 
+  int straightTieBreak(const std::vector<cards>& hand1,
+                       const std::vector<cards>& hand2,
+                       std::vector<cards>& river) {
+    // we just need to see which straight has a higher number this means we need
+    // to find the straight for both players and then find the biggest number.
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+
+    for (size_t i = 0; i < 2; i++) {
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+
+    std::sort(combined1.begin(), combined1.end(), cardAcending);
+    std::sort(combined2.begin(), combined2.end(), cardAcending);
+    int highestrank1 = 0;
+    int highestrank2 = 0;
+
+    int count1 = 1;
+    int count2 = 1;
+
+    for (size_t i = 0; i < combined1.size(); i++) {
+      if (highestrank1 < combined1[i].getRankAsInt()) {
+        count1++;
+        if (count1 >= 5) {
+          highestrank1 = combined1[i].getRankAsInt();
+        }
+      }
+
+      if (highestrank2 < combined2[i].getRankAsInt()) {
+        count2++;
+        if (count2 >= 5) {
+          highestrank2 = combined2[i].getRankAsInt();
+        }
+      }
+    }
+
+    if (highestrank1 > highestrank2) {
+      return 1;
+    } else if (highestrank1 < highestrank2) {
+      return 0;
+    }
+
+    if (highestrank1 == highestrank2) {
+      return -1;
+    }
+  }
+
+  int threeOfaKindTie(const std::vector<cards>& hand1,
+                      const std::vector<cards>& hand2,
+                      std::vector<cards>& river) {
+    // compare the three pair and then compare kickers
+
+    std::unordered_map<std::string, int> rankCount1;
+    std::unordered_map<std::string, int> rankCount2;
+
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+
+    for (size_t i = 0; i < 2; i++) {
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+
+    for (size_t i = 0; i < combined1.size(); i++) {
+      rankCount1[combined1[i].rankToString()]++;
+      rankCount2[combined2[i].rankToString()]++;
+    }
+
+    int highestRank1 = 0;
+    int highestRank2 = 0;
+
+    // we need to find the highest 3 pair for both players
+    for (auto& count : rankCount1) {
+      if (count.second == 3 && highestRank1 < stoi(count.first)) {
+        highestRank1 = stoi(count.first);
+      }
+    }
+    // we need to find the highest 3 pair for both players
+    for (auto& count : rankCount2) {
+      if (count.second == 3 && highestRank2 < stoi(count.first)) {
+        highestRank2 = stoi(count.first);
+      }
+    }
+
+    if (highestRank1 > highestRank2) {
+      return 1;
+    } else if (highestRank1 < highestRank2) {
+      return 0;
+    }
+
+    // if both players have the same 3 pair we go to the kicker
+
+    return checkKicker(hand1, hand2);
+  }
+
+  int twoPairTie(const std::vector<cards>& hand1,
+                 const std::vector<cards>& hand2, std::vector<cards>& river) {
+    // we need to find the 2 cards that make up the 2 pairs and compare them
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+
+    for (size_t i = 0; i < 2; i++) {
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+  }
+
   int tieBreaker(
       const std::vector<cards>& hand1, const std::vector<cards>& hand2,
       std::vector<cards>& river,
@@ -561,8 +682,16 @@ class handEvaluator {
         return fullHouseTie(hand1, hand2, river);
         break;
       case 6:  // flush tie
-        return;
+        return flushTie(hand1, hand2, river);
         break;
+      case 5:  // straight tie
+        return straightTieBreak(hand1, hand2, river);
+        break;
+      case 4:  // three of a kind tie
+        return threeOfaKindTie(hand1, hand2, river);
+        break;
+      case 3:  // 2 pair tie
+        return break;
       default:
         break;
     }
