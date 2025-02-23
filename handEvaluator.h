@@ -338,35 +338,35 @@ class handEvaluator {
                : highCards[1];
   }
 
-  int checkKicker(const std::vector<cards>& hand1,
-                  const std::vector<cards>& hand2) {
+  int checkKicker(std::vector<cards> hand1, std::vector<cards> hand2) {
     // combine the hands and then find the largest card
     std::unordered_set<int> rank1;
     std::unordered_set<int> rank2;
 
-    std::vector<cards> combined;
-
     for (size_t i = 0; i < 2; i++) {
-      combined.push_back(hand1[i]);
       rank1.insert(hand1[i].getRankAsInt());
-      combined.push_back(hand2[i]);
       rank2.insert(hand2[i].getRankAsInt());
     }
 
-    std::sort(combined.begin(), combined.end(), cardAcending);
+    // sort the hands
+    std::sort(hand1.begin(), hand1.end(), cardAcending);
+    std::sort(hand2.begin(), hand2.end(), cardAcending);
 
-    if (rank1.count(combined.back().getRankAsInt()) == 1 &&
-        (rank2.count(combined.back().getRankAsInt()) == 1)) {
-      return -1;
+    // first we need to compare the largest cards and then if they are the same
+    // we should compare the next
+
+    for (int i = 1; i >= 0; i--) {
+      if (hand1[i].getRankAsInt() > hand2[i].getRankAsInt()) {
+        return 1;
+      } else if (hand1[i].getRankAsInt() < hand2[i].getRankAsInt()) {
+        return 0;
+      }
     }
-    if (rank1.count(combined.back().getRankAsInt()) == 1 &&
-        (rank2.count(combined.back().getRankAsInt()) != 1)) {
-      return 1;
-    }
-    if (rank1.count(combined.back().getRankAsInt()) != 1 &&
-        (rank2.count(combined.back().getRankAsInt()) == 1)) {
-      return 0;
-    }
+
+    // if none of the return statements have been executed this means that the
+    // hand ranks are identical meaning we have a draw
+
+    return -1;
   }
 
   int fourOfaKindTie(
@@ -697,6 +697,46 @@ class handEvaluator {
     return checkKicker(hand1, hand2);
   }
 
+  int pairTieBreak(const std::vector<cards>& hand1,
+                   const std::vector<cards>& hand2, std::vector<cards>& river) {
+    // compare the pairs and then if they are the same we compare the kickers
+    std::vector<cards> combined1 = river;
+    std::vector<cards> combined2 = river;
+
+    std::unordered_map<int, int> rankCount1;
+    std::unordered_map<int, int> rankCount2;
+
+    for (size_t i = 0; i < 2; i++) {
+      combined1.push_back(hand1[i]);
+      combined2.push_back(hand2[i]);
+    }
+
+    for (size_t i = 0; i < combined1.size(); i++) {
+      rankCount1[combined1[i].getRankAsInt()]++;
+      rankCount2[combined2[i].getRankAsInt()]++;
+    }
+
+    int pair1 = 0;
+    int pair2 = 0;
+    for (auto& rank : rankCount1) {
+      if (rank.second == 2) {
+        pair1 = rank.first;
+      }
+    }
+    for (auto& rank : rankCount2) {
+      if (rank.second == 2) {
+        pair2 = rank.first;
+      }
+    }
+    // compare the ranks of both pairs
+    if (pair1 > pair2) {
+      return 1;
+    } else if (pair1 < pair2) {
+      return 0;
+    }
+
+    return checkKicker(hand1, hand2);
+  }
   int tieBreaker(
       const std::vector<cards>& hand1, const std::vector<cards>& hand2,
       std::vector<cards>& river,
@@ -740,7 +780,16 @@ class handEvaluator {
       case 3:  // 2 pair tie
         return twoPairTie(hand1, hand2, river);
         break;
+      case 2:  // pair tie
+        return pairTieBreak(hand1, hand2, river);
+        break;
+      case 1:  // compare kickers
+        return checkKicker(hand1, hand2);
+        break;
+
       default:
+        std::cout << "default has been called, tie was NOT returned"
+                  << std::endl;
         break;
     }
   }

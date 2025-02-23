@@ -34,7 +34,21 @@ double testGetProbability(
     oppenentHandStrength = a.evaluateHandStrength(OPhand, currentCards);
 
     if (heroHandStrength == oppenentHandStrength) {
-      tie++;
+      int res = a.tieBreaker(hand, OPhand, board, heroHandStrength);
+      switch (res) {
+        case 1:
+          wins++;
+          break;
+        case 0:
+          losses++;
+          break;
+        case -1:
+          tie++;
+          break;
+        default:
+          std::cout << "deafult condition for tie breaker called" << std::endl;
+          break;
+      }
     } else if (heroHandStrength > oppenentHandStrength) {
       wins++;
     } else if (heroHandStrength < oppenentHandStrength) {
