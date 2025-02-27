@@ -51,9 +51,9 @@ class deck {
     return first_card;
   }
 
-  void printDeck(std::vector<cards>& a) {
-    for (size_t i = 0; i < a.size(); i++) {
-      std::cout << a[i];
+  void printDeck() {
+    for (size_t i = 0; i < current_deck.size(); i++) {
+      std::cout << current_deck[i] << " ";
     }
     std::cout << std::endl;
   }

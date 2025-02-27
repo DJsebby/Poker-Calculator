@@ -1,6 +1,8 @@
 
 #include "test.h"
 
+#include <set>
+
 double testGetProbability(
     std::vector<cards> &hand, std::vector<cards> &OPhand,
     std::vector<cards> &board, int numOp, int numOfIter,
@@ -20,6 +22,7 @@ double testGetProbability(
   int oppenentHandStrength = 0;
   int heroHandStrength = 0;
 
+  std::unordered_set<int> resChecker;
   for (size_t i = 0; i < numOfIter; i++) {
     // creat board with exisiting cards
     currentCards = board;
@@ -30,8 +33,25 @@ double testGetProbability(
 
     // find hero's hand strength
     heroHandStrength = a.evaluateHandStrength(hand, currentCards);
+
     // find opponent hand strength
     oppenentHandStrength = a.evaluateHandStrength(OPhand, currentCards);
+
+    std::cout << "Hand strength detected: " << heroHandStrength << std::endl;
+
+    resChecker.insert(heroHandStrength);
+    if (resChecker.size() == 10) {
+      return 6969696969;
+    }
+
+    if (i % 100000 == 0) {
+      std::cout << "Unique hand strengths so far: " << resChecker.size()
+                << std::endl;
+    }
+
+    if (heroHandStrength >= 9) {
+      std::cout << "Detected strong hand: " << heroHandStrength << std::endl;
+    }
 
     if (heroHandStrength == oppenentHandStrength) {
       int res = a.tieBreaker(hand, OPhand, board, heroHandStrength);
@@ -43,10 +63,16 @@ double testGetProbability(
           losses++;
           break;
         case -1:
+          std::cout << "there was a tie and the community cards are: \n";
+          for (size_t i = 0; i < currentCards.size(); i++) {
+            std::cout << currentCards[i];
+          }
+          std::cout << "the hand score is " << heroHandStrength << std::endl;
           tie++;
           break;
         default:
-          std::cout << "deafult condition for tie breaker called" << std::endl;
+          std::cout << "deafult condition for tie breaker called" << res
+                    << std::endl;
           break;
       }
     } else if (heroHandStrength > oppenentHandStrength) {
@@ -92,8 +118,8 @@ void oneOpponentSetCards() {
   std::cout << OPhand[1] << std::endl;
 
   std::cout << "1 ---  " << std::endl;
-  std::cout << "the raw probability is"
-            << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
+  std::cout << "the raw probability is (54.81) "
+            << testGetProbability(hand, OPhand, board, numberOP, 10000, d)
             << std::endl;
 
   // flop
@@ -104,9 +130,10 @@ void oneOpponentSetCards() {
     std::cout << card;
   }
 
-  std::cout << "The probability of winning based on these cards is: \n";
+  std::cout << "online is: 13.43 \n";
+  std::cout << "we get: ";
 
-  std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
+  std::cout << testGetProbability(hand, OPhand, board, numberOP, 10000, d)
             << std::endl;
 
   board.push_back(d.drawTestTurn());
@@ -116,9 +143,10 @@ void oneOpponentSetCards() {
     std::cout << card;
   }
 
-  std::cout << "The probability of winning based on these cards is: \n";
+  std::cout << "online is: 88.64 \n";
+  std::cout << "we get: ";
 
-  std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
+  std::cout << testGetProbability(hand, OPhand, board, numberOP, 1000000, d)
             << std::endl;
   board.push_back(d.drawTestRiver());
 
@@ -129,6 +157,6 @@ void oneOpponentSetCards() {
 
   std::cout << "The probability of winning the gane is: \n";
 
-  std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
+  std::cout << testGetProbability(hand, OPhand, board, numberOP, 10000, d)
             << std::endl;
 }
