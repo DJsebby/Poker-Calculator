@@ -56,23 +56,20 @@ class handEvaluator {
 
   bool hasThreeOfaKind(const std::vector<cards>& hand,
                        const std::vector<cards>& river) {
-    std::vector<cards> combined;  // hand and river
-
-    std::unordered_map<cards::Rank, int> rankCount;
+    std::unordered_map<int, int> rankCount;
 
     for (size_t i = 0; i < hand.size(); i++) {
-      combined.push_back(hand[i]);
-      rankCount[hand[i].getRank()]++;  // default value = 0 therefore we are
-                                       // counting once instance of that object
+      rankCount[hand[i].getRankAsInt()]++;  // default value = 0 therefore we
+                                            // are counting once instance of
+                                            // that object
     }
 
     for (size_t i = 0; i < river.size(); i++) {
-      combined.push_back(river[i]);
-      rankCount[river[i].getRank()]++;
+      rankCount[river[i].getRankAsInt()]++;
     }
 
-    for (auto it = rankCount.begin(); it != rankCount.end(); it++) {
-      if (it->second == 3) {
+    for (auto& count : rankCount) {
+      if (count.second == 3) {
         return true;
       }
     }
@@ -170,38 +167,34 @@ class handEvaluator {
 
   bool hasFullHouse(const std::vector<cards>& hand,
                     const std::vector<cards>& river) {
-    std::unordered_map<std::string, int> rankCount;
+    std::unordered_map<int, int> rankCount;
 
     for (size_t i = 0; i < hand.size(); i++) {
-      rankCount[hand[i].rankToString()]++;
+      rankCount[hand[i].getRankAsInt()]++;
     }
 
     for (size_t i = 0; i < river.size(); i++) {
-      rankCount[river[i].rankToString()]++;
+      rankCount[river[i].getRankAsInt()]++;
     }
 
     // check if any counts are >= 5
     bool pair = false;
     bool three = false;
+    int rank = 0;
     for (auto it : rankCount) {
       if (it.second >= 3) {
         three = true;
+        rank = it.first;
       }
+    }
 
-      if (it.second >= 2) {
+    for (auto it : rankCount) {
+      if (it.second >= 2 && it.first != rank) {
         pair = true;
       }
     }
 
     // checking if the 2 of a kinda and 3 of a kinda exists seperatly
-    if (three) {
-      for (const auto& it : rankCount) {
-        if (it.second >= 2 && !(it.second >= 3)) {
-          pair = true;
-          break;
-        }
-      }
-    }
 
     return three && pair;
   }

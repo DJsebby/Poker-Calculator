@@ -39,6 +39,7 @@ double testGetProbability(
 
     std::cout << "Hand strength detected: " << heroHandStrength << std::endl;
 
+    resChecker.insert(oppenentHandStrength);
     resChecker.insert(heroHandStrength);
     if (resChecker.size() == 10) {
       return 6969696969;

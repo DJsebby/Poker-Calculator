@@ -11,8 +11,6 @@ test: main.cpp test.h cards.h deck.h handEvaluator.h player.h winningOdds.h
 	@g++ -g -o test main.cpp test.h cards.h deck.h handEvaluator.h player.h winningOdds.h 
 	@valgrind --leak-check=full ./test
 
-clear-drivers:
-	@rm drivers/*.out
-
-clean:
-	@rm *.out drivers/*.out
+testHand: testingHands.cpp  cards.h deck.h handEvaluator.h player.h winningOdds.h
+	@g++ -std=c++11 -o test  testingHands.cpp cards.h deck.h handEvaluator.h player.h winningOdds.h 
+	@ ./test
