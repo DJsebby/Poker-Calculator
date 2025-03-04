@@ -11,5 +11,8 @@ double testGetProbability(std::vector<cards> &hand, std::vector<cards> &OPhand,
                           std::vector<cards> board, int numOp, int numOfIter,
                           deck &d);
 
+double testingTheFlop(std::vector<cards> &hand, std::vector<cards> &OPhand,
+                      int numOfIter);
+
 void oneOpponentSetCards();
 #endif

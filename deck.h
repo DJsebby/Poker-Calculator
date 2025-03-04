@@ -51,6 +51,8 @@ class deck {
     return first_card;
   }
 
+  void burnCard() { current_deck.pop_back(); }
+
   void printDeck() {
     for (size_t i = 0; i < current_deck.size(); i++) {
       std::cout << current_deck[i] << " ";
@@ -148,6 +150,35 @@ class deck {
     std::vector<cards> flop;
     // burn card
     current_deck.pop_back();
+    // draw 7 of clubs, 10 of heart and 2 of spades
+    for (size_t i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Seven &&
+          current_deck[i].getSuit() == cards::Suit::Clubs) {
+        flop.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+    for (size_t i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Ten &&
+          current_deck[i].getSuit() == cards::Suit::Hearts) {
+        flop.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+    for (size_t i = 0; i < current_deck.size(); i++) {
+      if (current_deck[i].getRank() == cards::Rank::Two &&
+          current_deck[i].getSuit() == cards::Suit::Spades) {
+        flop.push_back(current_deck[i]);
+        current_deck.erase(current_deck.begin() + i);
+      }
+    }
+
+    return flop;
+  }
+
+  std::vector<cards> drawTestFlop2() {
+    std::vector<cards> flop;
+
     // draw 7 of clubs, 10 of heart and 2 of spades
     for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Seven &&

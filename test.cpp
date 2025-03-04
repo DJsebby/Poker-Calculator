@@ -61,9 +61,6 @@ double testGetProbability(
 
     if (heroHandStrength == oppenentHandStrength) {
       int res = a.tieBreaker(hand, OPhand, currentCards, heroHandStrength);
-      // debugging
-
-      std::cout << "res strenth" << heroHandStrength << std::endl;
 
       switch (res) {
         case 1:
@@ -107,6 +104,80 @@ double testGetProbability(
   return oddsOfWinning;
 }
 
+double testingTheFlop(std::vector<cards> &hand, std::vector<cards> &OPhand,
+                      int numOfIter) {
+  double oddsOfWinning = 0;
+  double wins = 0;
+  double losses = 0;
+  double tie = 0;
+
+  deck d;
+  handEvaluator a;
+
+  std::vector<cards> currentCards;
+
+  int oppenentHandStrength = 0;
+  int heroHandStrength = 0;
+
+  std::vector<cards> burntCards;
+
+  for (int i = 0; i < numOfIter; i++) {
+    currentCards = d.drawTestFlop2();
+    burntCards.push_back(d.drawCard());
+    for (size_t k = currentCards.size(); k < 5; k++) {
+      burntCards.push_back(d.drawCard());
+      currentCards.push_back(d.drawCard());
+    }
+
+    // find hero's hand strength
+    heroHandStrength = a.evaluateHandStrength(hand, currentCards);
+
+    // find opponent hand strength
+    oppenentHandStrength = a.evaluateHandStrength(OPhand, currentCards);
+
+    if (heroHandStrength >= 9) {
+      std::cout << "Detected strong hand: " << heroHandStrength << std::endl;
+    }
+
+    if (heroHandStrength == oppenentHandStrength) {
+      int res = a.tieBreaker(hand, OPhand, currentCards, heroHandStrength);
+      switch (res) {
+        case 1:
+          wins++;
+          break;
+        case 0:
+          losses++;
+          break;
+        case -1:
+          tie++;
+          break;
+        default:
+          std::cout << "deafult condition for tie breaker called" << res
+                    << std::endl;
+          break;
+      }
+    } else if (heroHandStrength > oppenentHandStrength) {
+      wins++;
+    } else if (heroHandStrength < oppenentHandStrength) {
+      losses++;
+    }
+
+    // to reshuffle just the new added cards
+
+    d.reshuffle(std::vector<cards>(currentCards.begin(), currentCards.end()));
+    d.reshuffle(std::vector<cards>(burntCards.begin(), burntCards.end()));
+    currentCards.clear();
+    burntCards.clear();
+  }
+
+  if ((wins + tie + losses) > 0) {
+    oddsOfWinning = (wins + 0.5 * tie) / (wins + tie + losses);
+  } else {
+    oddsOfWinning = 0;  // Default case for no iterations
+  }
+  return oddsOfWinning;
+}
+
 void oneOpponentSetCards() {
   deck d;
   winningOdds w;
@@ -129,7 +200,7 @@ void oneOpponentSetCards() {
 
   std::cout << "1 ---  " << std::endl;
   std::cout << "the raw probability is (54.81) "
-            << testGetProbability(hand, OPhand, board, numberOP, 1000000, d)
+            << testGetProbability(hand, OPhand, board, numberOP, 1000, d)
             << std::endl;
 
   // flop
@@ -143,8 +214,7 @@ void oneOpponentSetCards() {
   std::cout << "online is: 13.43 \n";
   std::cout << "we get: ";
 
-  std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
-            << std::endl;
+  std::cout << testingTheFlop(hand, OPhand, 100000) << std::endl;
 
   board.push_back(d.drawTestTurn());
 
@@ -156,7 +226,7 @@ void oneOpponentSetCards() {
   std::cout << "online is: 88.64 \n";
   std::cout << "we get: ";
 
-  std::cout << testGetProbability(hand, OPhand, board, numberOP, 100000, d)
+  std::cout << testGetProbability(hand, OPhand, board, numberOP, 1000, d)
             << std::endl;
   board.push_back(d.drawTestRiver());
 
