@@ -32,6 +32,9 @@ class cards {
   }
 
   std::string rankToString() const {
+    // std::cout << "DEBUG: rank = " << static_cast<int>(rank)
+    //           << ", suit = " << static_cast<int>(suit) << std::endl;
+
     switch (rank) {
       case Rank::Two:
         return "Two";
@@ -65,6 +68,9 @@ class cards {
   }
 
   std::string suitToString() const {
+    // std::cout << "DEBUG: rank = " << static_cast<int>(rank)
+    //           << ", suit = " << static_cast<int>(suit) << std::endl;
+
     switch (suit) {
       case Suit::Hearts:
         return "Hearts";

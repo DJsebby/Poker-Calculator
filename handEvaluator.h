@@ -329,8 +329,9 @@ class handEvaluator {
     highCards[0] = findHighestStraightFlush(combined1);
     highCards[1] = findHighestStraightFlush(combined2);
 
-    // Compare the highest straight flushes
-    return highCards[0] > highCards[1] ? highCards[0] : highCards[1];
+    // Compare the highest straight flushes and return value
+
+    return highCards[0] > highCards[1] ? 1 : 0;
   }
 
   int checkKicker(std::vector<cards> hand1, std::vector<cards> hand2) {
@@ -595,8 +596,8 @@ class handEvaluator {
                       std::vector<cards>& river) {
     // compare the three pair and then compare kickers
 
-    std::unordered_map<std::string, int> rankCount1;
-    std::unordered_map<std::string, int> rankCount2;
+    std::unordered_map<int, int> rankCount1;
+    std::unordered_map<int, int> rankCount2;
 
     std::vector<cards> combined1 = river;
     std::vector<cards> combined2 = river;
@@ -607,8 +608,8 @@ class handEvaluator {
     }
 
     for (size_t i = 0; i < combined1.size(); i++) {
-      rankCount1[combined1[i].rankToString()]++;
-      rankCount2[combined2[i].rankToString()]++;
+      rankCount1[combined1[i].getRankAsInt()]++;
+      rankCount2[combined2[i].getRankAsInt()]++;
     }
 
     int highestRank1 = 0;
@@ -616,14 +617,14 @@ class handEvaluator {
 
     // we need to find the highest 3 pair for both players
     for (auto& count : rankCount1) {
-      if (count.second == 3 && highestRank1 < stoi(count.first)) {
-        highestRank1 = stoi(count.first);
+      if (count.second == 3 && highestRank1 < count.first) {
+        highestRank1 = count.first;
       }
     }
     // we need to find the highest 3 pair for both players
     for (auto& count : rankCount2) {
-      if (count.second == 3 && highestRank2 < stoi(count.first)) {
-        highestRank2 = stoi(count.first);
+      if (count.second == 3 && highestRank2 < count.first) {
+        highestRank2 = count.first;
       }
     }
 

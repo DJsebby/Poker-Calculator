@@ -33,7 +33,7 @@ class winningOdds {
     int oppenentHandStrength;
     int heroHandStrength = 0;
 
-    for (size_t i = 0; i < numOfIter; i++) {
+    for (int i = 0; i < numOfIter; i++) {
       // dealing cards to opponent
       for (int k = 0; k < numOp; k++) {
         for (int j = 0; j < 2; j++) {
@@ -94,7 +94,7 @@ class winningOdds {
     int oppenentHandStrength;
     int heroHandStrength = 0;
 
-    for (size_t i = 0; i < numOfIter; i++) {
+    for (int i = 0; i < numOfIter; i++) {
       // creat board with exisiting cards
       currentCards = board;
       // to complete the board
@@ -136,7 +136,7 @@ class winningOdds {
 
       currentCards.clear();
       maxHandStrength = 0;
-        }
+    }
 
     if ((wins + tie + losses) > 0) {
       oddsOfWinning = (wins + 0.5 * tie) / (wins + tie + losses);

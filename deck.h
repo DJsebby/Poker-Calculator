@@ -106,7 +106,7 @@ class deck {
 
   std::vector<cards> drawFourHAceC() {  // just for testing purposes
     std::vector<cards> hand;
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Four &&
           current_deck[i].getSuit() == cards::Suit::Hearts) {
         hand.push_back(current_deck[i]);
@@ -114,7 +114,7 @@ class deck {
       }
     }
 
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Ace &&
           current_deck[i].getSuit() == cards::Suit::Clubs) {
         hand.push_back(current_deck[i]);
@@ -126,7 +126,7 @@ class deck {
 
   std::vector<cards> drawTenCJackD() {  // just for testing purposes
     std::vector<cards> hand;
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Ten &&
           current_deck[i].getSuit() == cards::Suit::Clubs) {
         hand.push_back(current_deck[i]);
@@ -134,7 +134,7 @@ class deck {
       }
     }
 
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Jack &&
           current_deck[i].getSuit() == cards::Suit::Diamonds) {
         hand.push_back(current_deck[i]);
@@ -149,21 +149,21 @@ class deck {
     // burn card
     current_deck.pop_back();
     // draw 7 of clubs, 10 of heart and 2 of spades
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Seven &&
           current_deck[i].getSuit() == cards::Suit::Clubs) {
         flop.push_back(current_deck[i]);
         current_deck.erase(current_deck.begin() + i);
       }
     }
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Ten &&
           current_deck[i].getSuit() == cards::Suit::Hearts) {
         flop.push_back(current_deck[i]);
         current_deck.erase(current_deck.begin() + i);
       }
     }
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Two &&
           current_deck[i].getSuit() == cards::Suit::Spades) {
         flop.push_back(current_deck[i]);
@@ -175,25 +175,25 @@ class deck {
   }
 
   cards drawTestTurn() {
-    std::vector<cards> Turn;
+    cards Turn(cards::Rank::Two, cards::Suit::Clubs);  // junk card value
     // burn card
     current_deck.pop_back();
     // draw Ace of diamonds
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Ace &&
           current_deck[i].getSuit() == cards::Suit::Diamonds) {
-        Turn.push_back(current_deck[i]);
+        Turn = current_deck[i];
         current_deck.erase(current_deck.begin() + i);
       }
     }
-    return Turn[0];
+    return Turn;
   }
   cards drawTestRiver() {
     std::vector<cards> river;
     // burn card
     current_deck.pop_back();
     // draw 2 of diamonds
-    for (int i = 0; i < current_deck.size(); i++) {
+    for (size_t i = 0; i < current_deck.size(); i++) {
       if (current_deck[i].getRank() == cards::Rank::Two &&
           current_deck[i].getSuit() == cards::Suit::Diamonds) {
         river.push_back(current_deck[i]);
