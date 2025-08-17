@@ -6,14 +6,14 @@ rank: Ten, suit: Clubs
 rank: Jack, suit: Diamonds
 1 ---  
 the raw probability is (54.81) Unique hand strengths so far: 1
-0.543
+0.5615
 2 --- After the flop the board is: 
 
 rank: Seven, suit: Clubs
 rank: Ten, suit: Hearts
 rank: Two, suit: Spades
 online is: 13.43 
-we get: 0.18083
+we get: 0.18275
 3 --- After the turn the board is: 
 
 rank: Seven, suit: Clubs
@@ -22,7 +22,7 @@ rank: Two, suit: Spades
 rank: Ace, suit: Diamonds
 online is: 88.64 
 we get: Unique hand strengths so far: 1
-0.876
+0.899
 4 --- After the river the board is: 
 
 rank: Seven, suit: Clubs

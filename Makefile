@@ -16,4 +16,7 @@ testHand: testingHands.cpp  cards.h deck.h handEvaluator.h player.h winningOdds.
 	@g++ -std=c++11 -o test  testingHands.cpp cards.h deck.h handEvaluator.h player.h winningOdds.h 
 	@ ./test
 
+testTie: testingTieBreaks.cpp  cards.h deck.h handEvaluator.h player.h winningOdds.h
+	@g++ -std=c++11 -o test  testingTieBreaks.cpp cards.h deck.h handEvaluator.h player.h winningOdds.h 
+	@ ./test
 
